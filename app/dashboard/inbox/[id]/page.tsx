@@ -44,7 +44,6 @@ interface Message {
   id: string
   content: string
   anon_id: string
-  anon_ip?: string
   created_at: string
   is_replied: boolean
   is_flagged: boolean
@@ -321,8 +320,7 @@ export default function InboxMessagesPage() {
         .insert([
           {
             inbox_id: params.id,
-            anon_ip: blockDialog.message.anon_ip,
-            blocked_by: user?.id,
+            anon_id: blockDialog.message.anon_id,
           },
         ])
 

@@ -2,8 +2,6 @@ import { supabase } from './supabase'
 import { getSiteUrl } from './site-config'
 
 export async function signUp(email: string, password: string, username: string) {
-  console.log('Starting signup for:', email, username)
-
   // Check if username is already taken (allow error to be silent if table doesn't allow reads)
   try {
     const { data: existingUser, error: checkError } = await supabase
@@ -12,18 +10,14 @@ export async function signUp(email: string, password: string, username: string) 
       .eq('username', username)
       .maybeSingle()
 
-    console.log('Username check result:', { existingUser, checkError })
-
     if (existingUser) {
       throw new Error('Username already taken')
     }
   } catch (error) {
-    console.log('Username check error (might be RLS):', error)
     // Continue anyway - RLS might be blocking reads
   }
 
   // 1. Sign up with Supabase Auth
-  console.log('Calling supabase.auth.signUp...')
   const { data: authData, error: authError } = await supabase.auth.signUp({
     email,
     password,
@@ -35,16 +29,12 @@ export async function signUp(email: string, password: string, username: string) 
     },
   })
 
-  console.log('Auth signup result:', { authData, authError })
-
   if (authError) {
-    console.error('Auth error:', authError)
     throw authError
   }
 
   // 2. Create user profile in users table
   if (authData.user) {
-    console.log('Creating user profile for:', authData.user.id)
     const { data: profileData, error: profileError } = await supabase
       .from('users')
       .insert([
@@ -58,13 +48,10 @@ export async function signUp(email: string, password: string, username: string) 
       .select()
       .single()
 
-    console.log('Profile creation result:', { profileData, profileError })
-
     if (profileError) {
-      console.error('Profile creation error:', profileError)
       // If it's a duplicate key error, the user might already exist (race condition)
       if (profileError.code === '23505') {
-        console.log('User profile already exists, continuing...')
+        // User profile already exists, continue
       } else {
         // For other errors (like RLS policy issues), throw to show the error
         throw new Error(`Failed to create user profile: ${profileError.message}`)
@@ -72,7 +59,6 @@ export async function signUp(email: string, password: string, username: string) 
     }
   }
 
-  console.log('Signup complete, returning:', authData)
   return authData
 }
 
