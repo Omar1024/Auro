@@ -1,0 +1,22 @@
+{
+  "name": "Auro - Anonymous Inbox Platform",
+  "short_name": "Auro",
+  "description": "Create multiple anonymous inboxes. Receive messages safely with built-in moderation.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#FDFDF8",
+  "theme_color": "#F7FF00",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
+

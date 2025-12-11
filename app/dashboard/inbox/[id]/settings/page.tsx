@@ -56,7 +56,7 @@ export default function InboxSettingsPage({
   }, [user, params.id])
 
   const fetchInbox = async () => {
-    if (!user) return
+    if (!user || !params?.id) return
 
     setIsLoading(true)
     try {

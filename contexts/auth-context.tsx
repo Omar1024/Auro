@@ -77,14 +77,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const checkIfBanned = async (userId: string): Promise<{ isBanned: boolean; reason?: string }> => {
     try {
-      const { data: banData } = await supabase
-        .from('banned_users')
-        .select('id, reason')
-        .eq('user_id', userId)
+      // Check if user's role is 'banned' in the users table
+      const { data: userData } = await supabase
+        .from('users')
+        .select('role')
+        .eq('id', userId)
         .maybeSingle()
 
-      if (banData) {
-        return { isBanned: true, reason: banData.reason || 'You have been banned from this platform' }
+      if (userData && userData.role === 'banned') {
+        return { isBanned: true, reason: 'You have been banned from this platform' }
       }
 
       return { isBanned: false }

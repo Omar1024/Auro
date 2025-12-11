@@ -145,13 +145,18 @@ export default function InboxMessagesPage() {
   }
 
   const fetchInboxAndMessages = async () => {
+    if (!params?.id || !user?.id) {
+      setIsLoading(false)
+      return
+    }
+    
     setIsLoading(true)
     try {
       const { data: inboxData, error: inboxError } = await supabase
         .from('inboxes')
         .select('*')
         .eq('id', params.id)
-        .eq('user_id', user?.id)
+        .eq('user_id', user.id)
         .single()
 
       if (inboxError) throw inboxError
@@ -179,7 +184,7 @@ export default function InboxMessagesPage() {
             created_at
           )
         `)
-        .eq('inbox_id', params.id)
+        .eq('inbox_id', params?.id || '')
         .order('created_at', { ascending: false })
 
       if (messagesError) throw messagesError

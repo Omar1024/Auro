@@ -48,17 +48,51 @@ export default function PublicProfilePage({
   }, [params?.username])
 
   const fetchProfileAndFeed = async () => {
-    if (!params?.username) return
+    if (!params?.username) {
+      setIsLoading(false)
+      return
+    }
     
     try {
-      // Get user by username
-      const { data: userData, error: userError } = await supabase
+      // Get user by username (exact match first, then case-insensitive fallback)
+      let { data: userData, error: userError } = await supabase
         .from('users')
         .select('id, username, profile_picture')
         .eq('username', params.username)
-        .single()
+        .maybeSingle()
 
-      if (userError) throw userError
+      // If not found with exact match, try case-insensitive
+      if (!userData && !userError) {
+        const { data: userDataCaseInsensitive, error: userErrorCaseInsensitive } = await supabase
+          .from('users')
+          .select('id, username, profile_picture')
+          .ilike('username', params.username)
+          .maybeSingle()
+        
+        if (userDataCaseInsensitive) {
+          userData = userDataCaseInsensitive
+        }
+        if (userErrorCaseInsensitive) {
+          userError = userErrorCaseInsensitive
+        }
+      }
+
+      if (userError) {
+        console.error('User fetch error:', userError)
+        throw userError
+      }
+      
+      if (!userData) {
+        console.error('User not found:', params.username)
+        toast({
+          title: "❌ User Not Found",
+          description: `User "${params.username}" doesn't exist`,
+          variant: "destructive",
+        })
+        setIsLoading(false)
+        router.push('/')
+        return
+      }
       
       setUserProfile(userData)
 
@@ -139,10 +173,11 @@ export default function PublicProfilePage({
         })
 
       setFeedItems(publicReplies)
-    } catch (error) {
+    } catch (error: any) {
+      console.error('Profile fetch error:', error)
       toast({
         title: "❌ Error",
-        description: "Failed to load profile",
+        description: error?.message || "Failed to load profile",
         variant: "destructive",
       })
     } finally {
