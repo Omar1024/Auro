@@ -49,6 +49,7 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key-here
 #### B. Production (Vercel/Netlify)
 - [ ] Add `NEXT_PUBLIC_SUPABASE_URL`
 - [ ] Add `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+- [ ] Add `NEXT_PUBLIC_SITE_URL` (e.g., `http://auro.obl.ee`)
 - [ ] **DO NOT** commit `.env.local` to git
 - [ ] Verify `.env.local` is in `.gitignore`
 
@@ -202,10 +203,10 @@ git push -u origin main
 - [ ] Include troubleshooting section
 
 #### B. User Guide (Optional)
-- [ ] Create Terms of Service
-- [ ] Create Privacy Policy
-- [ ] Add FAQ section
-- [ ] Create user documentation
+- [x] Create Terms of Service (✅ Updated to match neo-brutalism theme)
+- [x] Create Privacy Policy (✅ Updated to match neo-brutalism theme)
+- [ ] Add FAQ section (Not yet created)
+- [ ] Create user documentation (Not yet created)
 
 ---
 
