@@ -32,15 +32,31 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [hasFetchedProfile, setHasFetchedProfile] = useState(false)
 
   useEffect(() => {
+    // Set a timeout to ensure loading doesn't block rendering for too long
+    const timeout = setTimeout(() => {
+      if (loading) {
+        setLoading(false)
+      }
+    }, 2000) // Max 2 seconds for auth check
+
     // Get initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
+      clearTimeout(timeout)
       setUser(session?.user ?? null)
       if (session?.user && !hasFetchedProfile) {
         fetchProfile(session.user.id)
       } else {
         setLoading(false)
+        setHasFetchedProfile(true)
       }
+    }).catch(() => {
+      clearTimeout(timeout)
+      // If session check fails, still allow page to render
+      setLoading(false)
+      setHasFetchedProfile(true)
     })
+
+    return () => clearTimeout(timeout)
 
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(

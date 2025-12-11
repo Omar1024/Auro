@@ -7,9 +7,11 @@ import { useState } from "react"
 import { useAuth } from "@/contexts/auth-context"
 
 export default function LandingPage() {
-  const { user } = useAuth()
+  const { user, loading: authLoading } = useAuth()
   const [username, setUsername] = useState("")
   const [activeCard, setActiveCard] = useState(0)
+  
+  // Don't block rendering while auth loads - page is public
   
   const mobileCards = [
     {
@@ -42,7 +44,22 @@ export default function LandingPage() {
   ]
 
   return (
-    <div className="min-h-screen bg-[#FDFDF8] text-black font-sans antialiased overflow-x-hidden selection:bg-[#F7FF00] selection:text-black">
+    <>
+      {/* Noscript fallback for crawlers */}
+      <noscript>
+        <div style={{ padding: '40px', textAlign: 'center', fontFamily: 'sans-serif' }}>
+          <h1 style={{ fontSize: '32px', fontWeight: 'bold', marginBottom: '16px' }}>
+            Auro - Anonymous Inbox Platform
+          </h1>
+          <p style={{ fontSize: '18px', color: '#666' }}>
+            Create multiple anonymous inboxes. Receive messages safely with built-in moderation.
+          </p>
+          <p style={{ marginTop: '24px', fontSize: '14px', color: '#999' }}>
+            Please enable JavaScript to use this application.
+          </p>
+        </div>
+      </noscript>
+      <div className="min-h-screen bg-[#FDFDF8] text-black font-sans antialiased overflow-x-hidden selection:bg-[#F7FF00] selection:text-black">
       {/* Background Blur Effects */}
       <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
         <div className="absolute -top-[10%] -right-[10%] w-[600px] h-[600px] bg-[#F7FF00]/10 rounded-full blur-[100px]" />
@@ -371,6 +388,7 @@ export default function LandingPage() {
           © 2023 Auro Inc. All systems operational.
         </div>
       </footer>
-    </div>
+      </div>
+    </>
   )
 }
